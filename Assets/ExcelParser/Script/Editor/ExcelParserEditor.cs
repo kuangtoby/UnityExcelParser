@@ -19,13 +19,18 @@ namespace ExcelParser{
 
 	}
 
-
+	/// <summary>
+	/// Excel parser editor. The main class of parse excel to txt,and generate class file
+	/// </summary>
 	public class ExcelParserEditor : Editor {
 
-		public static void GenerateClass(string fileName,List<TitleData> titles)
+		/// <summary>
+		/// Generates the bean class.
+		/// </summary>
+		/// <param name="fileName">File name.</param>
+		/// <param name="titles">Titles.</param>
+		public static void GenerateBeanClass(string fileName,List<TitleData> titles)
 		{
-//			string fileName = "FileName";
-
 
 			string targetPath = Application.dataPath+"/ExcelParser/Script/DataBeans/";
 			string file = targetPath+fileName+"Bean.cs";
@@ -58,18 +63,6 @@ namespace ExcelParser{
 				outfile.WriteLine(" ");
 			}
 
-
-
-//			outfile.WriteLine(" // Use this for initialization");
-//			outfile.WriteLine(" void Start () {");
-//			outfile.WriteLine(" ");
-//			outfile.WriteLine(" }");
-//			outfile.WriteLine(" ");         
-//			outfile.WriteLine(" ");
-//			outfile.WriteLine(" // Update is called once per frame");
-//			outfile.WriteLine(" void Update () {");
-//			outfile.WriteLine(" ");
-//			outfile.WriteLine(" }");
 			outfile.WriteLine("}");
 
             
@@ -78,11 +71,17 @@ namespace ExcelParser{
 
 
 
-			GenerateMgrClass(fileName);
+
 			AssetDatabase.Refresh();
 
 		}
 
+
+
+		/// <summary>
+		/// Generates the mgr class.
+		/// </summary>
+		/// <param name="fileName">File name.</param>
 		public static void GenerateMgrClass(string fileName)
 		{
 			string targetPath = Application.dataPath+"/ExcelParser/Script/DataMgr/";
@@ -100,13 +99,8 @@ namespace ExcelParser{
 
 
 			string templetePath = Application.dataPath+"/ExcelParser/Templete/MgrTemplete.txt";
-			Debug.Log(templetePath);
+//			Debug.Log(templetePath);
 
-//			FileStream templeteFileStream = new FileStream(templetePath,FileMode.OpenOrCreate);
-
-//			TextAsset templete = (TextAsset)AssetDatabase.LoadAssetAtPath(templetePath,typeof(TextAsset))  ;
-
-//			string classText = templete.ToString();
 
 			string classText = File.ReadAllText(templetePath);
 
@@ -126,22 +120,16 @@ namespace ExcelParser{
 		}
 
 
-		[MenuItem("Assets/ExcelParser/Add C# Class from xlsx txt")]
+//		[MenuItem("Assets/ExcelParser/Add C# Class from txt")]
 		public static void ParseExcel(){
 			var objs = Selection.objects;
 
 			for (int i = 0; i < objs.Length; i++) {
 				var obj = objs[i];
 				if(obj is TextAsset){
-					string context = obj.ToString();
-					
-					string fileName = obj.name.ToString();
-					
-					
-					List<TitleData> titleDataList = LoadTxtData(context);
-                    
-                    GenerateClass(fileName,titleDataList);
-					
+
+					string path = AssetDatabase.GetAssetPath(obj);
+					GenerateAllClass(path);
 				}
 			}
 
@@ -149,7 +137,37 @@ namespace ExcelParser{
 		}
 
 
-		public static List<TitleData> LoadTxtData(string dataTxt)
+		/// <summary>
+		/// Generate xxxBean.cs and xxxMgr.cs
+		/// </summary>
+		/// <param name="excelTxtPath">Excel text path.</param>
+		static void GenerateAllClass(string excelTxtPath){
+
+			string context = File.ReadAllText(excelTxtPath);
+
+
+
+//			string fileName = obj.name.ToString();
+			int lastSlashesIndex = excelTxtPath.LastIndexOf('/');
+			int lastPointIndex = excelTxtPath.LastIndexOf('.');
+			string fileName = excelTxtPath.Substring(lastSlashesIndex+1,lastPointIndex - lastSlashesIndex-1);
+
+
+			List<TitleData> titleDataList = GetTitleDataList(context);
+			GenerateBeanClass(fileName,titleDataList);
+			GenerateMgrClass(fileName);
+			
+
+		}
+
+
+
+
+
+
+
+
+		public static List<TitleData> GetTitleDataList(string dataTxt)
 		{
 
 			List<TitleData> titleDataList = new List<TitleData>();
@@ -163,21 +181,7 @@ namespace ExcelParser{
 			string title = hList[2];
 			string[] titles = title.Split('\t');
 			string[] types = hList[0].Split('\t');
-			//Debug.Log(hList.Length + "<<<hList.Length");
-//			for (int i = 0; i < 3; i++)
-//			{
-//				if(i == 0||i==2){
-//					string[] line = hList[i].Split('\t');
-//					Dictionary<string, string> lineKeyValue = new Dictionary<string, string>();
-//					for (int j = 0; j < line.Length; j++)
-//					{
-//
-//
-//					}
-//				}
-//				
-//
-//			}
+
 
 
 			for(int i = 0;i<titles.Length;i++)
@@ -224,23 +228,35 @@ namespace ExcelParser{
 
 			string name = tileData.name;
 			string bigName = name.Substring(0,1).ToUpper()+name.Substring(1);
-//			Debug.Log(bigName);
 
-//			string result = propertyBlock;
 			propertyBlock = propertyBlock.Replace("{0}",tileData.type.ToString());
 			propertyBlock = propertyBlock.Replace("{1}",bigName);
 			propertyBlock = propertyBlock.Replace("{2}",name);
 
 
-//			string result = string.Format(propertyBlock,tileData.type.ToString(),bigName,name);
 
-//			Debug.Log(propertyBlock);
 
 			return propertyBlock;
 		}
 
-		[MenuItem("Assets/ExcelParser/XlsxToTxt")]
+//		[MenuItem("Assets/ExcelParser/XlsxToTxt")]
 		public static void XlsxToTxt()
+		{
+			XlsxToTxt(false);
+		}
+
+		[MenuItem("Assets/ExcelParser/GenerateClass from excel")]
+		public static void XlsxToTxtAndGenerateClass()
+		{
+			XlsxToTxt(true);
+		}
+
+
+		/// <summary>
+		/// Xlsxs to text.
+		/// </summary>
+		/// <param name="autoGenerateClass">If set to <c>true</c> auto generate class.</param>
+		static void XlsxToTxt(bool autoGenerateClass)
 		{
 			var objs = Selection.objects;
 
@@ -264,8 +280,6 @@ namespace ExcelParser{
 
 
 
-//					Debug.Log(targetFile);
-//					return;
 
 					FileStream targetFileStream = new FileStream(targetFile,FileMode.OpenOrCreate);
 
@@ -277,23 +291,17 @@ namespace ExcelParser{
 					int columns = result.Tables[0].Columns.Count;
 					int rows = result.Tables[0].Rows.Count;
 
-//					string xml = result.GetXml();
-//					Debug.Log(xml);
 
 					StringBuilder txtBuilder = new StringBuilder();
 
-//						string col = "";
 					for (int r = 0; r < rows; r++) {
 						for (int c = 0; c < columns; c++) {
 							txtBuilder.Append(result.Tables[0].Rows[r][c].ToString()).Append("\t");
-//							col+=result.Tables[0].Rows[r][c].ToString()+"\t";
 
 						}
-//						col+="/n";
 						txtBuilder.Append("\n");
 					}
 
-//					Debug.Log(txtBuilder);
 
 
 					StreamWriter steamWriter = new StreamWriter(targetFileStream);
@@ -305,11 +313,17 @@ namespace ExcelParser{
 					steamWriter.Close();
 					stream.Close();
 					targetFileStream.Close();
+
+					if(autoGenerateClass)
+					{
+						GenerateAllClass(targetFile);
+					}
 				}
 			}
 
 			AssetDatabase.Refresh();
-//			object xlsxs = selection
+
+
 		}
 
 
