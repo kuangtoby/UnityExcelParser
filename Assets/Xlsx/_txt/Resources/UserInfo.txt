@@ -1,0 +1,5 @@
+int	string	int	
+ID	名称	性别	
+id	name	sex	
+1	kuang	1	
+2	kuang2	2	

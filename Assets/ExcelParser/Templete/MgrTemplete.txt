@@ -1,0 +1,35 @@
+﻿using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+using ExcelParser;
+
+public class {0}Mgr : DataMgrBase {
+
+
+	protected override string GetXlsxPath ()
+	{
+		return "{0}";
+	}
+
+
+	protected override System.Type GetBeanType ()
+	{
+		return typeof({0}Bean);
+	}
+
+
+	public {0}Bean GetDataById(object id)
+	{
+		IDataBean dataBean = _GetDataById(id);
+
+		if(dataBean!=null)
+		{
+			return ({0}Bean)dataBean;
+		}else{
+			return null;
+		}
+	}
+
+
+
+}

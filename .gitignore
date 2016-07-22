@@ -1,0 +1,16 @@
+*.svd
+*.userprefs
+*.csproj
+*.pidb
+*.suo
+*.sln
+*.user
+*.unityproj
+*.booproj
+*.apk
+/Temp
+/Library
+/ProjectSettings
+.DS_Store
+Assets/_Texture
+/iOSBuild*
