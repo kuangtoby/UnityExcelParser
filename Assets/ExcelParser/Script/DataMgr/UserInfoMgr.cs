@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using ExcelParser;
 
-public class UserInfoMgr : DataMgrBase {
+public partial class UserInfoMgr : DataMgrBase<UserInfoMgr> {
 
 
 	protected override string GetXlsxPath ()

@@ -6,23 +6,54 @@ using System.Reflection;
 
 namespace ExcelParser
 {
-	public class DataMgrBase
+    public class DataMgrBase<T> : MonoBehaviour,IDataMgrBase where T : MonoBehaviour
 	{
+        private static T _instance;
+        public static T instance
+        {
+            get
+            { 
+                if (_instance == null)
+                {
+                    //_instance =
+                    _instance = GameObject.FindObjectOfType<T>();
+                    if (_instance == null)
+                    {
+                        _instance = new GameObject(typeof(T).Name).AddComponent<T>();
+                    }
 
+                    ((IDataMgrBase)_instance).InitData();
+                }
+                return _instance;
+
+            }
+        }
 
 		public Dictionary<object,IDataBean> idDataDic = new Dictionary<object, IDataBean> ();
 
+       
 
+        void Awake()
+        {
+            GameObject.DontDestroyOnLoad(gameObject);
+            InitData ();
+//            InitData ();
+        }
+
+        bool isInit = false;
 		/// <summary>
 		/// Inits the data.
 		/// </summary>
-		public void InitData ()
+        public void InitData ()
 		{
-
+            if(isInit)
+            {
+                return;   
+            }
 
 			Type dataBeanType = GetBeanType ();
 
-			Debug.Log (GetXlsxPath ());
+//			Debug.Log (GetXlsxPath ());
 
 			TextAsset txt = Resources.Load (GetXlsxPath ()) as TextAsset;
 
@@ -32,8 +63,8 @@ namespace ExcelParser
 
 
 			dataTxt = dataTxt.Replace ("\r", "");
-			dataTxt = dataTxt.Replace (" ", "");
-			dataTxt = dataTxt.Replace (" ", "");
+//			dataTxt = dataTxt.Replace (" ", "");
+//			dataTxt = dataTxt.Replace (" ", "");
 			string[] hList = dataTxt.Split ('\n');
 			
 			
@@ -101,6 +132,8 @@ namespace ExcelParser
 					idDataDic.Add (key, dataBean);
 				}
 			}
+
+            isInit = true;
 
 		}
 

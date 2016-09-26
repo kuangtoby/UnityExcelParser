@@ -173,8 +173,9 @@ namespace ExcelParser{
 			List<TitleData> titleDataList = new List<TitleData>();
 
 			dataTxt = dataTxt.Replace("\r", "");
-			dataTxt = dataTxt.Replace(" ", "");
-			dataTxt = dataTxt.Replace(" ", "");
+
+//			dataTxt = dataTxt.Replace(" ", "");
+//			dataTxt = dataTxt.Replace(" ", "");
 			string[] hList = dataTxt.Split('\n');
 
 
